@@ -11,7 +11,7 @@ class ReservationSetting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['count', 'start_date','progress','place'];
+    protected $fillable = ['count', 'start_date', 'progress', 'place'];
 
     public function getData()
     {
@@ -44,11 +44,11 @@ class ReservationSetting extends Model
 
         return $data;
     }
-    
+
     //会員と非会員を取得
     public function selectDef()
     {
-        $data = ReservationSetting::whereBetween('place', [1,2])->get();
+        $data = ReservationSetting::whereBetween('place', [1, 2])->get();
 
         return $data;
     }
@@ -79,7 +79,7 @@ class ReservationSetting extends Model
     public function selectMie()
     {
         $data = ReservationSetting::where('place', '=', 11)->get();
- 
+
         return $data;
     }
 
@@ -87,7 +87,7 @@ class ReservationSetting extends Model
     public function selectKyoto()
     {
         $data = ReservationSetting::where('place', '=', 21)->get();
-  
+
         return $data;
     }
 
@@ -95,7 +95,7 @@ class ReservationSetting extends Model
     public function selectNomember()
     {
         $data = ReservationSetting::where('place', '=', 2)->get();
-  
+
         return $data;
     }
 
@@ -103,8 +103,35 @@ class ReservationSetting extends Model
     public function userSelectReservation($id)
     {
         $data = ReservationSetting::where('id', '=', $id)->first();
-   
+
         return $data;
     }
 
+    //全データ取得
+    public function getAllData()
+    {
+        $data = DB::table('reservation_settings')->latest()->get();
+
+        return $data;
+    }
+
+    //全データ取得
+    public function serachReservation($array = [])
+    {
+
+        if (!empty($array['start_date']) && !empty($array['place'])) {
+            $data = ReservationSetting::where('start_date', '=', $array['start_date'])->where('place', '=', $array['place'])->get();
+            return $data;
+        }
+
+        if (!empty($array['start_date'])) {
+            $data = ReservationSetting::where('start_date', '=', $array['start_date'])->get();
+            return $data;
+        }
+
+        if (!empty($array['place'])) {
+            $data = ReservationSetting::where('place', '=', $array['place'])->get();
+            return $data;
+        }
+    }
 }

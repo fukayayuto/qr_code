@@ -40,4 +40,18 @@ class Account extends Model
 
         return $data;
     }
+
+    public function getAccount($account_id)
+    {
+        $user = Account::where('id', '=', $account_id)->first();
+
+        return $user;
+    }
+
+    public function getAllData()
+    {
+        $data = DB::table('accounts')->latest()->get();
+
+        return $data;
+    }
 }

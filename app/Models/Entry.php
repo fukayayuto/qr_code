@@ -39,4 +39,12 @@ class Entry extends Model
 
         return $data;
     }
+
+    //予約に対してのエントリー収集
+    public function getEntry($id)
+    {
+        $data = Entry::where('reservation_id', '=', $id)->get();
+
+        return $data;
+    }
 }

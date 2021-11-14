@@ -16,8 +16,10 @@ class CreateEntriesTable extends Migration
         Schema::create('entries', function (Blueprint $table) {
             $table->id();
             $table->integer('reservation_id');
-            $table->integer('user_id');
+            $table->integer('user_id')->nullable();
+            $table->integer('account_id')->nullable();
             $table->integer('count');
+            $table->integer('user_flg');
             $table->timestamps();
         });
     }

@@ -1,38 +1,41 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Eラーニング</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-        <!-- Styles -->
-        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <!-- Script -->
-        <script src="{{ asset('js/app.js') }}"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Eラーニング</title>
 
-        <script src='/js/fullcalendar/core/main.js'></script>
-        <script src='/js/fullcalendar/daygrid/main.js'></script>
-        <script src='/js/fullcalendar/interaction/main.js'></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- Script -->
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-        <script src="/js/ajax-setup.js"></script>
-        <script src='/js/fullcalendar.js'></script>
-        <script src='/js/event-control.js'></script>
-        {{-- ここ上の3個はあとで使います。ファイルを作成した後、あらかじめ読み込んでおきます。 --}}
+    <script src='/js/fullcalendar/core/main.js'></script>
+    <script src='/js/fullcalendar/daygrid/main.js'></script>
+    <script src='/js/fullcalendar/interaction/main.js'></script>
 
-        <link href='/css/fullcalendar/core/main.css' type="text/css" rel='stylesheet' />
-        <link href='/css/fullcalendar/daygrid/main.css' type="text/css" rel='stylesheet' />
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    </head>
-    <body>
+    <script src="/js/ajax-setup.js"></script>
+    <script src='/js/fullcalendar.js'></script>
+    <script src='/js/event-control.js'></script>
+    {{-- ここ上の3個はあとで使います。ファイルを作成した後、あらかじめ読み込んでおきます。 --}}
 
-        
-        {{-- <div class="card"　style="margin-bottom: 300px;">
+    <link href='/css/fullcalendar/core/main.css' type="text/css" rel='stylesheet' />
+    <link href='/css/fullcalendar/daygrid/main.css' type="text/css" rel='stylesheet' />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+
+    {{-- <div class="card"　style="margin-bottom: 300px;">
             <div class="card-body">
               <p class="card-text">予約人数選択</p>
               <p class="card-text">
@@ -47,144 +50,149 @@
             </div>
         </div> --}}
 
-        {{-- カレンダー表示 --}}
-        <div id="app">
-            <div class="m-auto w-50 m-5 p-5">
-                <div id='calendar'></div>
-            </div>
+    {{-- カレンダー表示 --}}
+    <div id="app">
+        <div class="m-auto w-50 m-5 p-5">
+            <div id='calendar'></div>
         </div>
+    </div>
 
-        
-        <div  class="container">
-            <table class="table ">
-              <thead>
+
+    <div class="container">
+        <table class="table ">
+            <thead>
                 <tr class="success">
-                  <th>会場</th>
-                  <th>講座期間</th>
-                  <th>予約状況</th>
-                  <th>予約人数</th>
+                    <th>会場</th>
+                    <th>講座期間</th>
+                    <th>予約状況</th>
+                    <th>予約人数</th>
                 </tr>
-              </thead>
+            </thead>
 
-              <form action="{{route('reservation_register_check')}}" method="POST"　>
+            <form action="{{ route('reservation_register_check') }}" method="POST" 　>
                 {{ csrf_field() }}
 
                 @if (!@empty($new_reservation))
-               
-                {{-- <form action="https://www.google.com/?hl=ja"> --}}
 
-                <tbody>
-                    @foreach ($new_reservation as $data)
+                    {{-- <form action="https://www.google.com/?hl=ja"> --}}
 
-                    <input type="hidden" name="id" value="{{$data->id}}" />
-         　　　　　　
-                    <tr>
-                        @switch($data->place)
-                            @case(2)
-                                <th>非会員用</th>
-                                @break
-                            @case(11)
-                                <th>三重県</th>
-                                @break
-                            @case(21)
-                                <th>京都府</th>
-                            @break
-                            @default
-                                <th>会員用</th>
-                                
-                        @endswitch
-                      {{-- <th>三重県</th> --}}
-                      <td>{{$data->start_date}}　〜　{{$end_date[$data->id] ?? ''}} </td>
-                      @if ($empty_seat[$data->id] != 0)
-                      <th>残り座席{{$empty_seat[$data->id]}}人</th>
-                      {{-- <td><a href="/reservation/check/{{$data->id}}/"><button>残り座席{{$empty_seat[$data->id]}}人</button></a></td> --}}
-                      @else
-                      <td>定員満員のため予約不可</td>
-                      @endif
+                    <tbody>
+                        @foreach ($new_reservation as $data)
 
-                      @if ($empty_seat[$data->id] != 0)
+                            <input type="hidden" name="id" value="{{ $data->id }}" />
+                            @if ($data->place == 1)
+                                <input type="hidden" name="user_flg" value=1 />
+                            @else
+                                <input type="hidden" name="user_flg" value=0 />
+                            @endif
 
-                      <th><select class="form-select" name="count1" id="count1">
-                        @switch($empty_seat[$data->id])
+                            <tr>
+                                @switch($data->place)
+                                    @case(2)
+                                        <th>非会員用</th>
+                                    @break
+                                    @case(11)
+                                        <th>三重県</th>
+                                    @break
+                                    @case(21)
+                                        <th>京都府</th>
+                                    @break
+                                    @default
+                                        <th>会員用</th>
 
-                            @case(1)
-                                <option value="1">1人</option>
-                                @break
-                            @case(2)
-                                <option value="1">1人</option>
-                                <option value="2">2人</option>
-                                
-                                @break
-                            @case(3)
-                            <option value="1">1人</option>
-                              <option value="2">2人</option>
-                              <option value="3">3人</option>
-                                
-                                @break 
-                            @case(4)
-                            <option value="1">1人</option>
-                            <option value="2">2人</option>
-                            <option value="3">3人</option>
-                            <option value="4">4人</option>
-                                
-                                @break  
-                            @default
-                              <option value="1">1人</option>
-                              <option value="2">2人</option>
-                              <option value="3">3人</option>
-                              <option value="4">4人</option>
-                              <option value="5">5人</option>
-                                
-                        @endswitch
-                        
-                        </select>
-                       </th>
+                                @endswitch
+                                {{-- <th>三重県</th> --}}
+                                <td>{{ $data->start_date }}　〜　{{ $end_date[$data->id] ?? '' }} </td>
+                                @if ($empty_seat[$data->id] != 0)
+                                    <th>残り座席{{ $empty_seat[$data->id] }}人</th>
+                                    {{-- <td><a href="/reservation/check/{{$data->id}}/"><button>残り座席{{$empty_seat[$data->id]}}人</button></a></td> --}}
+                                @else
+                                    <td>定員満員のため予約不可</td>
+                                @endif
 
-                          
-                      @endif
-                     
-                    </tr>
-                    @endforeach
+                                @if ($empty_seat[$data->id] != 0)
 
-                  </tbody>
+                                    <th><select class="form-select" name="count1" id="count1">
+                                            @switch($empty_seat[$data->id])
 
-                 
+                                                @case(1)
+                                                    <option value="1">1人</option>
+                                                @break
+                                                @case(2)
+                                                    <option value="1">1人</option>
+                                                    <option value="2">2人</option>
+
+                                                @break
+                                                @case(3)
+                                                    <option value="1">1人</option>
+                                                    <option value="2">2人</option>
+                                                    <option value="3">3人</option>
+
+                                                @break
+                                                @case(4)
+                                                    <option value="1">1人</option>
+                                                    <option value="2">2人</option>
+                                                    <option value="3">3人</option>
+                                                    <option value="4">4人</option>
+
+                                                @break
+                                                @default
+                                                    <option value="1">1人</option>
+                                                    <option value="2">2人</option>
+                                                    <option value="3">3人</option>
+                                                    <option value="4">4人</option>
+                                                    <option value="5">5人</option>
+
+                                            @endswitch
+
+                                        </select>
+                                    </th>
 
 
-                  
+                                @endif
 
-                  <div class="container">
-                    <div class="row">
-                      <div class="col text-center">
-                        <button class="btn btn-default"　type="submit">予約確認画面へ</button>
-                      </div>
+                            </tr>
+                        @endforeach
+
+                    </tbody>
+
+
+
+
+
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="col text-center">
+                                <button class="btn btn-default" 　type="submit">予約確認画面へ</button>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                    
-               
-               <br>
-                    
+
+
+                    <br>
+
                 @endif
 
             </form>
 
-                <div class="container">
-                    <div class="row">
-                      <div class="col text-left">
-                          <a href="/reservation/mie/index"><button  class="btn btn-default">三重県にて予約する</button><br><br></a>
-                          <a href="/reservation/kyoto/index"><button  class="btn btn-default">京都府にて予約する</button><br></a>
-                          
-                      </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col text-left">
+                        <a href="/reservation/mie/index"><button class="btn btn-default">三重県にて予約する</button><br><br></a>
+                        <a href="/reservation/kyoto/index"><button class="btn btn-default">京都府にて予約する</button><br></a>
+
                     </div>
-                  </div>
-           
-             
+                </div>
+            </div>
 
 
-                
-              
-    
-              {{-- <tbody>
+
+
+
+
+
+            {{-- <tbody>
                 @foreach ($data as $d)
      　　　　　　
                 <tr>
@@ -203,55 +211,55 @@
                             
                     @endswitch
                   {{-- <th>三重県</th> --}}
-                  {{-- <td>{{$d->start_date}}　〜　{{$end_date[$d->id] ?? ''}} </td> --}}
-                  {{-- <td>{{$end_date[$d->id] ?? ''}} </td> --}}
-                  {{-- @if ($empty_seat[$d->id] != 0) --}}
-                  {{-- <td><a href="/reservation/check/{{$d->id}}/"><button>予約 : 残り座席{{$empty_seat[$d->id]}}人</button></a></td> --}}
-                  {{-- @else --}}
-                  {{-- <td>定員満員のため予約不可</td> --}}
-                  {{-- <td>{{$new_reservation->id}}</td> --}}
-                  {{-- @endif
+            {{-- <td>{{$d->start_date}}　〜　{{$end_date[$d->id] ?? ''}} </td> --}}
+            {{-- <td>{{$end_date[$d->id] ?? ''}} </td> --}}
+            {{-- @if ($empty_seat[$d->id] != 0) --}}
+            {{-- <td><a href="/reservation/check/{{$d->id}}/"><button>予約 : 残り座席{{$empty_seat[$d->id]}}人</button></a></td> --}}
+            {{-- @else --}}
+            {{-- <td>定員満員のため予約不可</td> --}}
+            {{-- <td>{{$new_reservation->id}}</td> --}}
+            {{-- @endif
                 </tr>
                 @endforeach --}}
-              {{-- </tbody> --}} 
-    
-              
-            </table>
-          </div>
+            {{-- </tbody> --}}
+
+
+        </table>
+    </div>
 
 
 
 
 
-        <link href='{{ asset('fullcalendar-5.10.1/lib/main.css') }}' rel='stylesheet' />
-        <script src='{{ asset('fullcalendar-5.10.1/lib/main.js') }}'></script>
-       
-       <script>
+    <link href='{{ asset('fullcalendar-5.10.1/lib/main.css') }}' rel='stylesheet' />
+    <script src='{{ asset('fullcalendar-5.10.1/lib/main.js') }}'></script>
 
-            document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    locale: 'ja',
-                    height: 'auto',
-                    firstDay: 1,
-                    headerToolbar: {
-                        left: "dayGridMonth",
-                        center: "title",
-                        right: "today prev,next"
-                    },
-                    buttonText: {
-                        today: '今月',
-                        month: '月',
-                        // list: 'リスト'
-                    },
-                    noEventsContent: 'スケジュールはありません',
-                  
-                    events: "/setEvents",
-                 
-                 });
-                 calendar.render();
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ja',
+                height: 'auto',
+                firstDay: 1,
+                headerToolbar: {
+                    left: "dayGridMonth",
+                    center: "title",
+                    right: "today prev,next"
+                },
+                buttonText: {
+                    today: '今月',
+                    month: '月',
+                    // list: 'リスト'
+                },
+                noEventsContent: 'スケジュールはありません',
+
+                events: "/setEvents",
+
             });
-        </script>
-    </body>
+            calendar.render();
+        });
+    </script>
+</body>
+
 </html>

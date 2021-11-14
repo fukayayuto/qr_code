@@ -1,92 +1,64 @@
-<x-guest-layout>
-    <x-jet-authentication-card>
-        <x-slot name="logo">
-            <x-jet-authentication-card-logo />
-        </x-slot>
+<!DOCTYPE html>
+<html lang="ja">
 
-        <x-jet-validation-errors class="mb-4" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-         <!-- Laravelバリデーションのエラー表示 -->
-         @if ($errors->any())
-         <div class="alert alert-danger">
-             <ul>
-             @foreach ($errors->all() as $error)
-                 <li>{{ $error }}</li>
-             @endforeach
-             </ul>
-         </div>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         @endif
 
-        <form method="POST" action="{{route('nomember_account_create')}}">
+        <form method="POST" action="{{ route('nomember_account_create') }}">
             @csrf
-
-
-            <input type="hidden" name="count" value="{{$count}}">
-            <input type="hidden" name="reservation_id" value="{{$reservation_id}}">
-            <div>
-                <x-jet-label for="family_name" value="名字" />
-                <x-jet-input id="family_name" class="block mt-1 w-full" type="text" name="family_name" required autofocus />
-            </div><br>
-
-            <div>
-                <x-jet-label for="first_name" value="名前" />
-                <x-jet-input id="first_name" class="block mt-1 w-full" type="text" name="first_name" required autofocus />
+            <input type="hidden" name="count" value="{{ $count }}">
+            <input type="hidden" name="reservation_id" value="{{ $reservation_id }}">
+            <input type="hidden" name="user_flg" value=0>
+            <div class="form-group">
+                <label>名字</label>
+                <input type="text" class="form-control" id="family_name" placeholder="名字" name="family_name">
             </div>
-
-            <div class="mt-4">
-                <x-jet-label for="email" value="メールアドレス" />
-                <x-jet-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
-            </div><br>
-
-            <div>
-                <x-jet-label for="company_name" value="会社名" />
-                <x-jet-input id="company_name" class="block mt-1 w-full" type="text" name="company_name" :value="old('company_name')" required autofocus autocomplete="name" />
-            </div><br>
-
-            <div>
-                <x-jet-label for="sales_office" value="営業所名" />
-                <x-jet-input id="sales_office" class="block mt-1 w-full" type="text" name="sales_office" />
-            </div><br>
-
-            <div>
-                <x-jet-label for="phone" value="電話番号" />
-                <x-jet-input id="phone" class="block mt-1 w-full" type="text" name="phone" required autofocus />
-            </div><br>
-
-            <div class="container">
-                <div class="row">
-                  <div class="col text-center">
-                    <button class="btn btn-default"　type="submit">予約確認画面へ</button>
-                  </div>
-                </div>
-              </div>
-
-            {{-- @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="mt-4">
-                    <x-jet-label for="terms">
-                        <div class="flex items-center">
-                            <x-jet-checkbox name="terms" id="terms"/>
-
-                            <div class="ml-2">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900">'.__('Privacy Policy').'</a>',
-                                ]) !!}
-                            </div>
-                        </div>
-                    </x-jet-label>
-                </div>
-            @endif --}}
-
-            {{-- <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-jet-button class="ml-4">
-                    {{ __('Register') }}
-                </x-jet-button>
-            </div> --}}
+            <div class="form-group">
+                <label>名前</label>
+                <input type="text" class="form-control" id="first_name" placeholder="名前" name="first_name">
+            </div>
+            <div class="form-group">
+                <label>メールアドレス</label>
+                <input type="email" class="form-control" id="email" placeholder="メールアドレス" name="email">
+            </div>
+            <div class="form-group">
+                <label>会社名</label>
+                <input type="text" class="form-control" id="company_name" placeholder="会社名" name="company_name">
+            </div>
+            <div class="form-group">
+                <label>営業所</label>
+                <input type="text" class="form-control" id="sales_office" placeholder="営業所" name="sales_office">
+            </div>
+            <div class="form-group">
+                <label>電話番号</label>
+                <input type="text" class="form-control" id="phone" placeholder="電話番号" name="phone">
+                <small id="phoneHelp" class="form-text text-muted">ハイフンなしで入力してください</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-    </x-jet-authentication-card>
-</x-guest-layout>
+    </div>
+</body>
+
+</html>

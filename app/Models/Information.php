@@ -17,4 +17,20 @@ class Information extends Model
 
         return $data;
     }
+
+    //全項目選択
+    public function getAllData()
+    {
+        $data = DB::table('information')->latest()->get();
+
+        return $data;
+    }
+
+     //全項目選択
+     public function getInfo($id)
+     {
+         $data = Information::where('id', '=', $id)->first();
+
+         return $data;
+     }
 }

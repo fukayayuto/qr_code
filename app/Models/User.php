@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -74,5 +75,12 @@ class User extends Authenticatable
         $user = User::where('id', '=', $user_id)->first();
 
         return $user;
+    }
+
+    public function getAllData()
+    {
+        $data = DB::table('users')->latest()->get();
+
+        return $data;
     }
 }

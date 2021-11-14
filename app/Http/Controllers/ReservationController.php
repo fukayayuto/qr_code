@@ -11,8 +11,10 @@ use App\Models\Account;
 use App\Models\User;
 use App\Models\Entry;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use App\Mail\MailTest;
 use Carbon\Carbon;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class ReservationController extends Controller
 {
@@ -24,13 +26,13 @@ class ReservationController extends Controller
         $start = date("Y-m-d");
         //終了日
         $end = date("Y年m月d日", strtotime('+3 month'));
-        
-        
+
+
         $reservation = [];
         $reservation_date = [];
         for ($i = $start; $i <= $end; $i = date('Y-m-d', strtotime($i . '+1 day'))) {
             $reservation = DB::table('reservations')->where('reservation_date', $i)->get();
-            
+
             $count = 5;
 
             if (!empty($reservation)) {
@@ -42,14 +44,14 @@ class ReservationController extends Controller
                 $reservation_date[$i] = $count;
             }
         }
-    
+
         var_dump($reservation_date);
 
 
 
         return view('reservation');
     }
- 
+
     //予約日時決定後
     public function reservation_create(Request $request)
     {
@@ -71,8 +73,8 @@ class ReservationController extends Controller
 
         $data = $request->all();
 
-    
-      
+
+
 
         return view('last_check', compact('data', 'user'));
 
@@ -89,30 +91,30 @@ class ReservationController extends Controller
         $flg = 1;
         return view('count_form')->with('flg', $flg);
     }
-     
+
     //人数選択後、予約画面移行時
     public function next(Request $request)
     {
-        $member = $request->count ;
+        $member = $request->count;
 
         $data = DB::table('reservations')->get();
 
-        
+
         //開始日
         $start = date("Y-m-d");
         //終了日
         $end = date("Y年m月d日", strtotime('+3 month'));
-        
-        
+
+
         $reservation = [];
         $reservation_date = [];
         $data = [];
         $n = 0;
         for ($i = $start; $i <= $end; $i = date('Y-m-d', strtotime($i . '+1 day'))) {
             $reservation = DB::table('reservations')->where('reservation_date', $i)->get();
-            
+
             $count = 5;
-            
+
 
             if (!empty($reservation)) {
                 foreach ($reservation as $res) {
@@ -134,8 +136,8 @@ class ReservationController extends Controller
 
         //     return view('reservation')->with('count',$count)->with('user_id',$user_id);
         // }
-        
- 
+
+
         return view('reservation', compact('data'))->with('count', $member)->with('arr', $arr);
     }
 
@@ -150,7 +152,7 @@ class ReservationController extends Controller
 
             return view('count_form')->with('user', $user);
         }
-        
+
         return redirect()->route('login');
     }
 
@@ -173,7 +175,7 @@ class ReservationController extends Controller
 
         $account = new Account();
 
-       //会員状態の確認
+        //会員状態の確認
         // if (!empty(Auth::user())) {
         //     $user = Auth::user();
         // }
@@ -186,7 +188,7 @@ class ReservationController extends Controller
             $account->sales_office = $request->sales_office;
         }
         $account->phone = $request->phone;
-      
+
         //アカウント登録
         $account->save();
 
@@ -210,8 +212,8 @@ class ReservationController extends Controller
 
         Mail::to($mail_adress)->send(new MailTest($mail_text, $m_user_name, $m_company_name, $m_reservation_date, $m_reservation_count));
 
-        
-        
+
+
         return redirect()->route('count');
     }
 
@@ -222,13 +224,13 @@ class ReservationController extends Controller
             $user = Auth::user();
 
             return redirect('/dashboard');
-            
+
 
             $user_id = 0;
             $user_id = $user->id;
 
             $reservation = DB::table('reservations')->where('user_id', 1)->get();
-            
+
             $data = [];
 
             // dd($reservation);
@@ -238,8 +240,8 @@ class ReservationController extends Controller
             //     $data[$i]['count'] = $reservation[$i]['count'];
             // }
 
-            
-         
+
+
             // foreach ($reservation as $res) {
             //     $data['date'] = $res['reservation_date'];
             //     $data['count'] = $res['count'];
@@ -289,10 +291,10 @@ class ReservationController extends Controller
         $reservation = new ReservationSetting();
 
         // $data = $request->all();
-        $data = $request->only(['place', 'start_date', 'progress','count','id']);
+        $data = $request->only(['place', 'start_date', 'progress', 'count', 'id']);
 
         $reservation->updateOne($data);
-        
+
         //予約詳細変更
         // $data->place = $request->place;
         // $data->start_date = $request->start_date;
@@ -326,7 +328,7 @@ class ReservationController extends Controller
 
         $reservation->save();
 
-             
+
         //予約情報一覧取得
         $reservation = new ReservationSetting();
 
@@ -351,7 +353,7 @@ class ReservationController extends Controller
 
         $data = $reservation->selectDefalut();
 
-        
+
 
         //予約状況を取得
         $entry = new Entry();
@@ -369,7 +371,7 @@ class ReservationController extends Controller
     public function reservation_check_list($id, $count)
     {
         $user = [];
-        
+
         if (!empty(Auth::user())) {
             $user = Auth::user();
         }
@@ -419,7 +421,7 @@ class ReservationController extends Controller
         $entry->user_id = $account_id;
         $entry->save();
 
-        
+
 
         return view('/reservation/finish');
     }
@@ -433,7 +435,7 @@ class ReservationController extends Controller
 
         $data = $reservation->selectDef();
 
-        
+
 
         //予約状況を取得
         $entry = new Entry();
@@ -450,15 +452,15 @@ class ReservationController extends Controller
         $start = $this->formatDate($request->all()['start']);
         $end = $this->formatDate($request->all()['end']);
 
-    
-        
+
+
 
         //データ取得
-        $events = ReservationSetting::select('id', 'place', 'start_date', 'progress')->whereBetween('start_date', [$start, $end])->whereBetween('place', [1,2])->get();
-  
+        $events = ReservationSetting::select('id', 'place', 'start_date', 'progress')->whereBetween('start_date', [$start, $end])->whereBetween('place', [1, 2])->get();
+
         //データを配列にまとめる
         $newArr = [];
-        
+
         foreach ($events as $item) {
             $count = 0;
             foreach ($empty_seat as $k => $seat) {
@@ -473,19 +475,19 @@ class ReservationController extends Controller
             $newItem["start"] = $item["start_date"];
 
             if ($item["place"] == 1) {
-                $newItem["title"] = '会員用：残り'.$count.'人';
+                $newItem["title"] = '会員用：残り' . $count . '人';
                 $newItem["color"] = '#99CCFF';
             } elseif ($item["place"] == 2) {
-                $newItem["title"] = '非会員用：残り'.$count.'人';
+                $newItem["title"] = '非会員用：残り' . $count . '人';
                 $newItem["color"] = '#CCCCCC';
             } elseif ($item["place"] == 3) {
                 $newItem["color"] = 'green';
             } else {
             }
 
-            $newItem["url"] = 'http://localhost:8888/reservation/index/'.$item["id"];
+            $newItem["url"] = 'http://localhost:8888/reservation/index/' . $item["id"];
 
-            
+
             $newItem["textColor"] = 'black';
 
             $start_date = new Carbon($item["start_date"]);
@@ -494,7 +496,7 @@ class ReservationController extends Controller
             $newArr[] = $newItem;
         }
         //新たな配列を用意し、 EventsObjectが対応している配列にキーの名前を変更する
-  
+
         echo json_encode($newArr);
     }
 
@@ -517,13 +519,13 @@ class ReservationController extends Controller
             $empty_seat[$val['id']] = $entry->getEmpty($val['id']);
         }
 
-       
+
         $start = $this->formatDate($request->all()['start']);
 
         $end = $this->formatDate($request->all()['end']);
 
         $events = ReservationSetting::select('id', 'place', 'start_date', 'progress')->whereBetween('start_date', [$start, $end])->where('place', '=', 11)->get();
-  
+
         $newArr = [];
         foreach ($events as $item) {
             $count = 0;
@@ -533,7 +535,7 @@ class ReservationController extends Controller
                 }
             }
             $newItem["id"] = $item["id"];
-            $newItem["title"] = '残り'.$count.'人';
+            $newItem["title"] = '残り' . $count . '人';
             $newItem["start"] = $item["start_date"];
 
             $newItem["color"] = '#99CCFF';
@@ -548,7 +550,7 @@ class ReservationController extends Controller
             $newArr[] = $newItem;
         }
         //新たな配列を用意し、 EventsObjectが対応している配列にキーの名前を変更する
-  
+
         echo json_encode($newArr);
     }
 
@@ -570,13 +572,13 @@ class ReservationController extends Controller
             $empty_seat[$val['id']] = $entry->getEmpty($val['id']);
         }
 
-       
+
         $start = $this->formatDate($request->all()['start']);
 
         $end = $this->formatDate($request->all()['end']);
 
         $events = ReservationSetting::select('id', 'place', 'start_date', 'progress')->whereBetween('start_date', [$start, $end])->where('place', '=', 21)->get();
-  
+
         $newArr = [];
         foreach ($events as $item) {
             $count = 0;
@@ -586,13 +588,13 @@ class ReservationController extends Controller
                 }
             }
             $newItem["id"] = $item["id"];
-            $newItem["title"] = '残り'.$count.'人';
+            $newItem["title"] = '残り' . $count . '人';
             $newItem["start"] = $item["start_date"];
 
             $newItem["color"] = '#99CCFF';
             $newItem["textColor"] = 'black';
 
-            $newItem["url"] = 'http://localhost:8888/reservation/kyoto/index/'.$item["id"];
+            $newItem["url"] = 'http://localhost:8888/reservation/kyoto/index/' . $item["id"];
 
             $start_date = new Carbon($item["start_date"]);
             $progress = (int) $item["progress"];
@@ -600,7 +602,7 @@ class ReservationController extends Controller
             $newArr[] = $newItem;
         }
         //新たな配列を用意し、 EventsObjectが対応している配列にキーの名前を変更する
-  
+
         echo json_encode($newArr);
     }
 
@@ -632,7 +634,7 @@ class ReservationController extends Controller
             $empty_seat[$val['id']] = $entry->getEmpty($val['id']);
         }
 
-       
+
 
         $start = '2021-11-01';
         $end = '2021-11-31';
@@ -642,7 +644,7 @@ class ReservationController extends Controller
         // $end = $this->formatDate($request->all()['end']);
 
         $events = ReservationSetting::select('id', 'place', 'start_date', 'progress')->whereBetween('start_date', [$start, $end])->where('place', '=', 11)->get();
-  
+
         $newArr = [];
         foreach ($events as $item) {
             $newItem["id"] = $item["id"];
@@ -657,7 +659,7 @@ class ReservationController extends Controller
             $newArr[] = $newItem;
         }
         //新たな配列を用意し、 EventsObjectが対応している配列にキーの名前を変更する
-  
+
         echo json_encode($newArr);
     }
 
@@ -682,7 +684,7 @@ class ReservationController extends Controller
 
         $data = $reservation->selectDef();
 
-        
+
 
         //予約状況を取得
         $entry = new Entry();
@@ -704,7 +706,7 @@ class ReservationController extends Controller
         //     $new_reservation = $new_reservations->selectReservation($id);
         // }
 
-       
+
 
 
         return view('/reservation/index', compact('data', 'empty_seat', 'end_date'));
@@ -720,7 +722,7 @@ class ReservationController extends Controller
 
         $data = $reservation->selectDef();
 
-        
+
 
         //予約状況を取得
         $entry = new Entry();
@@ -757,8 +759,14 @@ class ReservationController extends Controller
     //予約確認画面に移行したとき
     public function reservation_register_check(Request $request)
     {
-        $id = $request->id;
+        $reservation_id = $request->id;
         $count = $request->count1;
+        $user_flg = $request->user_flg;
+
+        if ($user_flg == 0) {
+            return view('/reservation/nomember/account')->with('count', $count)->with('reservation_id', $reservation_id);
+        }
+
 
         //ログイン情報
         if (empty(Auth::user())) {
@@ -770,7 +778,7 @@ class ReservationController extends Controller
         //予約情報
         $reservation = new ReservationSetting();
 
-        $data = $reservation->selectReservation($id);
+        $data = $reservation->selectReservation($reservation_id);
 
         // $data = [];
 
@@ -797,7 +805,7 @@ class ReservationController extends Controller
 
         $data = $reservation->selectMie();
 
-        
+
 
         //予約状況を取得
         $entry = new Entry();
@@ -849,7 +857,7 @@ class ReservationController extends Controller
     {
         // //予約情報一覧取得
         $reservation = new ReservationSetting();
-        $data= $reservation->selectReservations($id);
+        $data = $reservation->selectReservations($id);
 
         // $data = $reservation->selectKyoto();
 
@@ -873,52 +881,54 @@ class ReservationController extends Controller
         //     $end_date[$val['id']] = $start_date->addDays($progress)->format('Y-m-d');
         // }
 
-        
-        
+
+
 
         // return view('/reservation/kyoto/index', compact('data', 'empty_seat', 'end_date', 'reservation'));
-        return view('/reservation/kyoto/index',compact('data'));
+        return view('/reservation/kyoto/index', compact('data'));
     }
 
     //カレンダーの予約バーをクリック(三重県)
     public function reservation_customer_mie_index_add($id)
     {
         // $count = $request->count;
- 
+
         //予約情報一覧取得
         $reservation = new ReservationSetting();
- 
+
         $data = $reservation->selectMie();
- 
+
         //予約状況を取得
         $entry = new Entry();
- 
+
         $empty_seat = [];
         $end_date = [];
- 
- 
+
+
         if (!empty($id)) {
             $new_reservations = new ReservationSetting();
             $new_reservation = $new_reservations->selectReservations($id);
         }
- 
+
         foreach ($new_reservation as $val) {
             $empty_seat[$val['id']] = (int) $entry->getEmpty($val['id']);
- 
+
             $start_date = new Carbon($val["start_date"]);
             $progress = (int) $val["progress"];
             $end_date[$val['id']] = $start_date->addDays($progress)->format('Y-m-d');
         }
- 
+
         return view('/reservation/mie/index', compact('data', 'empty_seat', 'end_date', 'new_reservation'));
     }
 
     //予約確認後、予約内容登録する
     public function reservation_register_store(Request $request)
     {
-        die('id');
+
+
         //顧客内容をアカウントに登録
-        if (empty(Auth::user())) {
+        if (!is_null($request->user_flg)) {
+
             $account = new Account();
 
             $account->family_name = $request->family_name;
@@ -929,7 +939,7 @@ class ReservationController extends Controller
                 $account->sales_office = $request->sales_office;
             }
             $account->phone = $request->phone;
-      
+
             //アカウント登録
             $account->save();
             $account_id = $account->id;
@@ -939,17 +949,18 @@ class ReservationController extends Controller
 
         $entry->reservation_id = $request->reservation_id;
         $entry->count = $request->count;
-        $entry->user_id = 0;
-        if (empty(Auth::user())) {
+        if (!is_null($request->user_flg)) {
             $entry->account_id = $account_id;
-        }else{
+            $entry->user_flg = 0;
+        } else {
             $entry->user_id = Auth::user()->id;
+            $entry->user_flg = 1;
         }
 
         //予約をエントリーに登録
         $entry->save();
 
-      
+
         //予約完了メール送信
 
         if (empty(Auth::user())) {
@@ -970,7 +981,7 @@ class ReservationController extends Controller
 
         $data = $reservation->selectMie();
 
-        
+
 
         //予約状況を取得
         $entry = new Entry();
@@ -1008,13 +1019,13 @@ class ReservationController extends Controller
             $empty_seat[$val['id']] = $entry->getEmpty($val['id']);
         }
 
-       
+
         $start = $this->formatDate($request->all()['start']);
 
         $end = $this->formatDate($request->all()['end']);
 
         $events = ReservationSetting::select('id', 'place', 'start_date', 'progress')->whereBetween('start_date', [$start, $end])->where('place', '=', 2)->get();
-  
+
         $newArr = [];
         foreach ($events as $item) {
             $count = 0;
@@ -1024,13 +1035,13 @@ class ReservationController extends Controller
                 }
             }
             $newItem["id"] = $item["id"];
-            $newItem["title"] = '残り'.$count.'人';
+            $newItem["title"] = '残り' . $count . '人';
             $newItem["start"] = $item["start_date"];
 
             $newItem["color"] = '#99CCFF';
             $newItem["textColor"] = 'black';
 
-            $newItem["url"] = 'http://localhost:8888/reservation/nomember/index/'.$item["id"];
+            $newItem["url"] = 'http://localhost:8888/reservation/nomember/index/' . $item["id"];
 
             $start_date = new Carbon($item["start_date"]);
             $progress = (int) $item["progress"];
@@ -1038,7 +1049,7 @@ class ReservationController extends Controller
             $newArr[] = $newItem;
         }
         //新たな配列を用意し、 EventsObjectが対応している配列にキーの名前を変更する
-  
+
         echo json_encode($newArr);
     }
 
@@ -1046,32 +1057,32 @@ class ReservationController extends Controller
     public function reservation_customer_nomember_index_add($id)
     {
         // $count = $request->count;
- 
+
         //予約情報一覧取得
         $reservation = new ReservationSetting();
- 
+
         $data = $reservation->selectNomember();
 
         //予約状況を取得
         $entry = new Entry();
- 
+
         $empty_seat = [];
         $end_date = [];
- 
- 
+
+
         if (!empty($id)) {
             $new_reservations = new ReservationSetting();
             $new_reservation = $new_reservations->selectReservations($id);
         }
- 
+
         foreach ($new_reservation as $val) {
             $empty_seat[$val['id']] = (int) $entry->getEmpty($val['id']);
- 
+
             $start_date = new Carbon($val["start_date"]);
             $progress = (int) $val["progress"];
             $end_date[$val['id']] = $start_date->addDays($progress)->format('Y-m-d');
         }
- 
+
         return view('/reservation/nomember/index', compact('data', 'empty_seat', 'end_date', 'new_reservation'));
     }
 
@@ -1087,19 +1098,19 @@ class ReservationController extends Controller
     //アカウント登録後(非会員用)
     public function reservation_customer_nomember_account_create(Request $request)
     {
+
         $reservation_id = $request->reservation_id;
         $count = $request->count;
+        $user_flg = 0;
 
-         // バリデーションの追加
-        // $rules = [
-        // 'family_name' => ['required', 'integer'],
-        // 'first_name' => ['required', 'string'],
-        // 'email' => ['required', 'email'],
-        // 'company_name' => ['required', 'string'],
-        // 'sales_office' => ['string'],
-        // 'phone' => ['required', 'string'],
-        // ];
-        // $this->validate($request, $rules);
+        $validator = Validator::make($request->all(), [
+            'family_name' => ['required', 'string'],
+            'first_name' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'company_name' => ['required', 'string'],
+            'sales_office' => ['string', 'nullable'],
+            'phone' => ['required', 'string', 'regex:/^[0-9]+$/', 'between:8,11'],
+        ]);
 
         //顧客情報
         $user = new Account();
@@ -1114,10 +1125,10 @@ class ReservationController extends Controller
 
         //予約情報
         $reservation = new ReservationSetting();
- 
+
         $data = $reservation->selectReservation($reservation_id);
-        
-        return view('/reservation/register/check', compact('user', 'data'))->with('count', $count);
+
+        return view('/reservation/register/check', compact('user', 'data'))->with('count', $count)->with('user_flg', $user_flg);
     }
 
     public function setEventsMeiCount($id)
@@ -1140,7 +1151,7 @@ class ReservationController extends Controller
             $empty_seat[$val['id']] = $entry->getEmpty($val['id']);
         }
 
-       
+
         // $start = $this->formatDate($request->all()['start']);
         // $end = $this->formatDate($request->all()['end']);
 
@@ -1148,7 +1159,7 @@ class ReservationController extends Controller
         $end = '2022-12-31';
 
         $events = ReservationSetting::select('id', 'place', 'start_date', 'progress')->whereBetween('start_date', [$start, $end])->where('place', '=', 11)->get();
-  
+
         $newArr = [];
         foreach ($events as $item) {
             $count = 0;
@@ -1164,12 +1175,12 @@ class ReservationController extends Controller
                 $newItem["title"] = '定員オーバーにより予約不可';
             } else {
                 $newItem["color"] = '#99CCFF';
-                $newItem["title"] = '残り'.$count.'人';
+                $newItem["title"] = '残り' . $count . '人';
             }
-            
+
             $newItem["start"] = $item["start_date"];
 
-            
+
             $newItem["textColor"] = 'black';
 
             if ($left_count >= 0) {
@@ -1183,7 +1194,7 @@ class ReservationController extends Controller
             $newArr[] = $newItem;
         }
         //新たな配列を用意し、 EventsObjectが対応している配列にキーの名前を変更する
-  
+
         echo json_encode($newArr);
     }
 
@@ -1201,6 +1212,4 @@ class ReservationController extends Controller
         $newArr[] = $newItem;
         echo json_encode($newArr);
     }
-
-    
 }

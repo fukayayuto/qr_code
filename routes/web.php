@@ -9,6 +9,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntryController;
+use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\Ajax;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailTest;
@@ -213,8 +214,8 @@ Route::get('/reservation/load', [AccountController::class, 'load']);
 
 
 //ajax動作確認
-Route::get('/contacts', [ContactController::class,'index']);
-Route::post('/ajax/contacts', [App\Http\Controllers\Ajax\ContactController::class,'store']);
+Route::get('/contacts', [ContactController::class, 'index']);
+Route::post('/ajax/contacts', [App\Http\Controllers\Ajax\ContactController::class, 'store']);
 
 //予約確認詳細
 Route::get('/reservation/detail/{id}', [HomeController::class, 'reservation_detail']);
@@ -226,3 +227,76 @@ Route::get('/reservation/delete/{id}', [EntryController::class, 'delete_index'])
 
 //カレンダーの予約バーをクリック(京都)
 Route::get('/reservation/list/{id}', [ReservationController::class, 'reservation_list_get']);
+
+
+
+
+
+
+
+//管理画面部分****************************************************************************************************************************************************
+
+
+//マネージメント画面
+Route::get('/management/index', [ManagementController::class, 'index']);
+
+
+//マネージメント画面(予約情報の管理)
+Route::get('/management/reservation/index', [ManagementController::class, 'reservation_index']);
+
+//マネージメント画面(予約情報の登録)
+Route::post('/management/reservation/store', [ManagementController::class, 'reservation_store'])->name('reservation_store');
+
+Route::get('/management/reservation/store', [ManagementController::class, 'reservation_store_index']);
+
+//マネージメント画面(予約情報の編集画面)
+Route::get('/management/reservation/detail/{id}', [ManagementController::class, 'reservation_detail']);
+
+//マネージメント画面(予約情報の編集後)
+Route::post('/management/reservation/detail/edit', [ManagementController::class, 'reservation_detail_edit'])->name('reservation_detail_edit');
+
+Route::get('/management/reservation/detail/edit', [ManagementController::class, 'reservation_detail']);
+
+//マネージメント画面(予約情報の削除後)
+Route::get('/management/reservation/delete/{id}', [ManagementController::class, 'reservation_delete']);
+
+
+//マネージメント画面(予約情報の削除後)
+Route::get('/management/reservation/list/{id}', [ManagementController::class, 'reservation_entry_list']);
+
+
+
+
+//マネージメント画面(インフォメーションの表示)
+Route::get('/management/information/index', [ManagementController::class, 'information_index']);
+
+//マネージメント画面(インフォメーションの登録)
+Route::post('/management/information/store', [ManagementController::class, 'information_store'])->name('information_store');
+
+Route::get('/management/information/store', [ManagementController::class, 'information_store_index']);
+
+//マネージメント画面(インフォメーション情報の編集画面)
+Route::get('/management/information/detail/{id}', [ManagementController::class, 'information_detail']);
+
+//マネージメント画面(インフォメーション情報の編集後)
+Route::post('/management/information/detail/edit', [ManagementController::class, 'information_detail_edit'])->name('information_detail_edit');
+
+Route::get('/management/information/detail/edit', [ManagementController::class, 'reservation_detail_edit_index']);
+
+//マネージメント画面(インフォメーション情報の削除)
+Route::post('/management/information/delete/{id}', [ManagementController::class, 'information_delete']);
+
+Route::get('/management/information/delete/{id}', [ManagementController::class, 'information_delete_index']);
+
+
+
+
+
+
+//マネージメント画面(ユーザー情報表示)
+Route::get('/management/user/index', [ManagementController::class, 'user_index']);
+
+//マネージメント画面(ユーザー詳細情報表示)
+Route::get('/management/user/detail/{id}/{user_flg}', [ManagementController::class, 'user_detail']);
+
+//****************************************************************************************************************************************************
