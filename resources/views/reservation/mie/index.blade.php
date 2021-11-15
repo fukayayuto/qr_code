@@ -67,19 +67,27 @@
 
         
         <div  class="container">
-            <table class="table " id="targetTable">
-              <thead>
-                <tr class="success">
-                  <td>講座期間</td>
-                  <td>予約人数</td>
-                  <td hidden>ID</td>
-                </tr>
-              </thead>
+            <form action="{{route('mie_reservation_store')}}" method="POST" name="form">
+              @csrf
+              <table class="table " id="targetTable">
+                <thead>
+                  <tr class="success">
+                    <td>講座期間</td>
+                    <td>予約人数</td>
+                    <td hidden>ID</td>
+                  </tr>
+                </thead>
 
+                  
                 
-              
-            </table>
+              </table>
+                <div  class="container">
+                      <button id="button">次へ</button>
+              </div>
+            </form>
           </div>
+
+          
 
 
 
@@ -92,6 +100,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
           var calendarEl = document.getElementById('calendar');
+          document.getElementById("button").style.display ="none";
 
           var calendar = new FullCalendar.Calendar(calendarEl, {
             
@@ -149,13 +158,24 @@
                  newText = document.createTextNode(count + '人');
                  newCell.appendChild(newText);
 
-                 newCell = newRow.insertCell();
-                 newText = document.createTextNode(reservatin_id);
-                 newCell.appendChild(newText);
+                 document.getElementById("button").style.display ="block";
+
+                 var reservation_id_1 = document.getElementById('reservation_id_1');
+
+                 if (!reservation_id_1) {
+                  make_hidden('reservation_id_1', res[0]['id'],'form','reservation_id_1');
+                  make_hidden('count_1',count ,'form','count_1');
+                  
+                 }else{
+                  make_hidden('reservation_id_2', res[0]['id'],'form','reservation_id_2');
+                  make_hidden('count_2',count ,'form','count_2');
+                 }
+
                })
                //通信が失敗したとき
                .fail((error)=>{
-                   console.log(error.statusText)
+                   console.log(error.statusText);
+                   console.log('error');
                })      
 
               }
@@ -182,10 +202,23 @@
                  });
                  calendar.render();
             });
-
-            
-
 });
+
+function make_hidden(name, value, formname,id) {
+    var q = document.createElement('input');
+    q.type = 'hidden';
+    q.name = name;
+    q.id = id;
+    q.value = value;
+    if (formname) {
+    	if ( document.forms[formname] == undefined ){
+    		console.error( "ERROR: form " + formname + " is not exists." );
+    	}
+    	document.forms[formname].appendChild(q);
+    } else {
+    	document.forms[0].appendChild(q);
+    }
+}
 
 
 

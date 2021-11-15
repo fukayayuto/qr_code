@@ -232,6 +232,18 @@ Route::get('/reservation/list/{id}', [ReservationController::class, 'reservation
 
 
 
+//三重県登録部分
+Route::post('/reservation/mie/store', [ReservationController::class, 'mie_reservation_store'])->name('mie_reservation_store');
+
+Route::get('/reservation/mie/store', [ReservationController::class, 'mie_reservation_store_index']);
+
+Route::post('/reservation/mie/store/post', [ReservationController::class, 'mie_reservation_store_post'])->name('reservation_mie_register_store');
+
+Route::get('/reservation/mie/store/post', [ReservationController::class, 'mie_reservation_store_post_index']);
+
+
+
+
 
 
 

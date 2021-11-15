@@ -1212,4 +1212,73 @@ class ReservationController extends Controller
         $newArr[] = $newItem;
         echo json_encode($newArr);
     }
+
+    public function mie_reservation_store(Request $request)
+    {
+        $user = Auth::user();
+
+        $user_flg = 1;
+
+        $reservation_count = $request->num;
+
+        $data = [];
+        $tmp = [];
+
+        $id =  $request->reservation_id_1;
+        $tmp['id'] = $id;
+        $tmp['count'] = $request->count_1;
+
+        $reservation = new ReservationSetting();
+        
+        $reservation_data = $reservation->selectReservation($id);
+        $tmp['place'] = $reservation_data->place;
+        $tmp['start_date'] = $reservation_data->start_date;
+        $tmp['progress'] = $reservation_data->progress;
+        $data[1] = $tmp;
+
+        if (!empty($request->reservation_id_2)) {
+            $tmp = [];
+            $id = $request->reservation_id_2;
+            $tmp['id'] = $id;
+            $tmp['count'] = $request->count_2;
+
+            $reservation = new ReservationSetting();
+
+            $reservation_data = $reservation->selectReservation($id);
+            $tmp['place'] = $reservation_data->place;
+            $tmp['start_date'] = $reservation_data->start_date;
+            $tmp['progress'] = $reservation_data->progress;
+            $data[2] = $tmp;
+        }
+
+
+        return view('/reservation/mie/check',compact('data','user'))->with('user_flg',$user_flg);
+    }
+
+    public function mie_reservation_store_post(Request $request)
+    {
+        $user = Auth::user();
+        $user_id = $user->id;
+
+        $entry = new Entry();
+        $entry->user_id = $user_id;
+        $entry->reservation_id =  $request->reservation_1;
+        $entry->count =  $request->count_1;
+        $entry->user_flg = 1;
+
+        $entry->save();
+
+        if(isset($request->reservation_2)){
+        $entry = new Entry();
+        $entry->user_id = $user_id;
+        $entry->reservation_id =  $request->reservation_2;
+        $entry->count =  $request->count_2;
+        $entry->user_flg = 1;
+
+        $entry->save();
+        }
+        return redirect('/dashboard');
+
+    }
+
 }
