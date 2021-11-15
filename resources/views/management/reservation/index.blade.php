@@ -39,8 +39,9 @@
             <input type="hidden" name="search" id="search" value="1">
             @if (!empty($search))
 
-                @if (!empty($search['place']) && !empty($search['start_date']))
+                @if (isset($search['place'])&& !empty($search['start_date']))
                     <select name="place" id="place">
+                        <option value=""></option>
                         <option value="1" <?php if ($search['place'] == 1) {
     echo ' selected';
 } ?>>会員</option>
@@ -58,8 +59,9 @@
 
                 @else
 
-                    @if (!empty($search['place']))
+                    @if (isset($search['place']))
                         <select name="place" id="place">
+                            <option value=""></option>
                             <option value="1" <?php if ($search['place'] == 1) {
     echo ' selected';
 } ?>>会員</option>
@@ -78,6 +80,7 @@
 
                     @if (!empty($search['start_date']))
                         <select name="place" id="place">
+                            <option value=""></option>
                             <option value="1" <?php if ($search['place'] == 1) {
     echo ' selected';
 } ?>>会員</option>
@@ -98,6 +101,7 @@
 
             @else
                 <select name="place" id="place">
+                    <option value=""></option>
                     <option value="1">会員</option>
                     <option value="2">非会員</option>
                     <option value="11">三重県</option>
@@ -115,23 +119,23 @@
 
     <br>
 
-    <div class="container">
+    <div class="container" id="users">
         <table class="table">
             <thead>
                 <tr class="success">
-                    <td>ID</td>
-                    <td>予約会場</td>
-                    <td>開始日</td>
-                    <td>所用日数</td>
-                    <td>定員枠</td>
-                    <td>残り定員枠</td>
-                    <td>作成日時</td>
-                    <td>更新日時</td>
-                    <td></td>
-                    <td></td>
+                    <th>ID</th>
+                    <th>予約会場</th>
+                    <th class="sort" data-sort="id">開始日</th>
+                    <th>終了日</th>
+                    <th>所用日数</th>
+                    <th>定員枠</th>
+                    <th>残り定員枠</th>
+                    <th>更新日時</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="list">
                 @if (!empty($data))
                     @foreach ($data as $item)
                         <tr>
@@ -152,11 +156,11 @@
                                 @default
 
                             @endswitch
-                            <td>{{ $item['start_date'] }}</td>
+                            <td id="id">{{ $item['start_date'] }}</td>
+                            <td>{{ $item['end_date'] }}</td>
                             <td>{{ $item['progress'] }}日</td>
                             <td>{{ $item['count'] }}席</td>
                             <td>{{ $item['left_seat'] }}席</td>
-                            <td>{{ $item['created_at'] }}</td>
                             <td>{{ $item['updated_at'] }}</td>
                             <td><a href="/management/reservation/detail/{{ $item['id'] }}"><button>編集</button></a>
                             </td>
@@ -170,9 +174,21 @@
             </tbody>
         </table>
     </div>
+</body>
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+    <script>
+        var options = {
+          valueNames: [ 'id', 'name']
+        };
+        
+        var userList = new List('users', options);
+        
+        // 初期状態はidで昇順ソートする
+        userList.sort( 'id', {order : 'asc' });
+    </script>
 
     {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.min.js"> --}}
-</body>
+
 
 </html>

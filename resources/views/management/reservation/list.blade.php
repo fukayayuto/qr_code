@@ -27,6 +27,7 @@
                     <td>会場</td>
                     <td>講座開始日</td>
                     <td>講座終了日</td>
+                    <td>所要日程</td>
                     <td>定員枠</td>
                     <td>残り定員枠</td>
                     <td>作成日</td>
@@ -59,8 +60,9 @@
                         @endswitch
                         <td>{{ $reservation_data['start_date'] }}</td>
                         <td>{{ $reservation_data['end_date'] }}</td>
-                        <td>{{ $reservation_data['count'] }}</td>
-                        <td>{{ $reservation_data['used_seat'] }}</td>
+                        <td>{{ $reservation_data['progress'] }}日</td>
+                        <td>{{ $reservation_data['count'] }}人</td>
+                        <td>{{ $reservation_data['used_seat'] }}人</td>
                         <td>{{ $reservation_data['created_at'] }}</td>
                         <td><a href="/management/reservation/detail/{{ $reservation_data['id'] }}">予約情報の変更</a></td>
                     </tr>

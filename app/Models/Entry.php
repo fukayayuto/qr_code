@@ -47,4 +47,20 @@ class Entry extends Model
 
         return $data;
     }
+
+     //非会員の予約を収集
+     public function getAccountEntry($account_id)
+     {
+         $data = Entry::where('account_id', '=', $account_id)->get();
+ 
+         return $data;
+     }
+
+     //会員の予約を収集
+     public function getUserEntry($user_id)
+     {
+         $data = Entry::where('user_id', '=', $user_id)->get();
+ 
+         return $data;
+     }
 }

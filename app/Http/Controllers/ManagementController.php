@@ -27,7 +27,7 @@ class ManagementController extends Controller
         if (!empty($request->search)) {
             $search = [];
 
-            if (!empty($request->start_date) && !empty($request->place)) {
+            if (!empty($request->start_date) && isset($request->place)) {
                 $search['start_date'] = $request->input('start_date');
                 $search['place'] = $request->input('place');
                 $reservation_data = $reservation->serachReservation($search);
@@ -42,6 +42,10 @@ class ManagementController extends Controller
                     $tmp['count'] = $val->count;
                     $tmp['created_at'] = $val->created_at;
                     $tmp['updated_at'] = $val->updated_at;
+
+                    $start_date = new Carbon($tmp["start_date"]);
+                    $progress = (int) $tmp["progress"];
+                    $tmp["end_date"] = $start_date->addDays($progress)->format('Y-m-d');
         
                     $entry = new Entry();
                     $entry_data = $entry->getEntry($val->id);
@@ -59,7 +63,7 @@ class ManagementController extends Controller
                 return view('/management/reservation/index', compact('data', 'search'));
             }
 
-            if (!empty($request->place)) {
+            if (isset($request->place)) {
                 $search['place'] = $request->input('place');
                 $reservation_data = $reservation->serachReservation($search);
 
@@ -73,6 +77,10 @@ class ManagementController extends Controller
                     $tmp['count'] = $val->count;
                     $tmp['created_at'] = $val->created_at;
                     $tmp['updated_at'] = $val->updated_at;
+
+                    $start_date = new Carbon($tmp["start_date"]);
+                    $progress = (int) $tmp["progress"];
+                    $tmp["end_date"] = $start_date->addDays($progress)->format('Y-m-d');
         
                     $entry = new Entry();
                     $entry_data = $entry->getEntry($val->id);
@@ -93,6 +101,7 @@ class ManagementController extends Controller
 
             if (!empty($request->start_date)) {
                 $search['start_date'] = $request->input('start_date');
+                $search['place'] = 0;
                 $reservation_data = $reservation->serachReservation($search);
 
                 $data = [];
@@ -105,6 +114,10 @@ class ManagementController extends Controller
                     $tmp['count'] = $val->count;
                     $tmp['created_at'] = $val->created_at;
                     $tmp['updated_at'] = $val->updated_at;
+
+                    $start_date = new Carbon($tmp["start_date"]);
+                    $progress = (int) $tmp["progress"];
+                    $tmp["end_date"] = $start_date->addDays($progress)->format('Y-m-d');
         
                     $entry = new Entry();
                     $entry_data = $entry->getEntry($val->id);
@@ -134,6 +147,10 @@ class ManagementController extends Controller
             $tmp['count'] = $val->count;
             $tmp['created_at'] = $val->created_at;
             $tmp['updated_at'] = $val->updated_at;
+
+            $start_date = new Carbon($tmp["start_date"]);
+            $progress = (int) $tmp["progress"];
+            $tmp["end_date"] = $start_date->addDays($progress)->format('Y-m-d');
 
             $entry = new Entry();
             $entry_data = $entry->getEntry($val->id);
@@ -347,9 +364,26 @@ class ManagementController extends Controller
         if ($user_flg == 1) {
             $user = new User();
             $data = $user->selectUser($id);
+
+            $entry = new Entry();
+            $entry_data = $entry->getUserEntry($id);
+
         } else {
             $account = new Account();
             $data = $account->getAccount($id);
+
+            $entry = new Entry();
+            $entry_datas = $entry->getAccountEntry($id);
+
+            $entry_data = [];
+
+            foreach ($entry_data as $val){
+                $reservation = new ReservationSetting();
+                $reservation_data = $reservation->selectReservation($val['id']);
+                
+            }
+
+
         }
         return view('/management/user/detail', compact('data'));
     }
