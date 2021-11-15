@@ -13,10 +13,8 @@ use App\Models\Entry;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
-
 class ManagementController extends Controller
 {
-
     public function index()
     {
         return view('/management/index');
@@ -32,26 +30,123 @@ class ManagementController extends Controller
             if (!empty($request->start_date) && !empty($request->place)) {
                 $search['start_date'] = $request->input('start_date');
                 $search['place'] = $request->input('place');
-                $data = $reservation->serachReservation($search);
+                $reservation_data = $reservation->serachReservation($search);
+
+                $data = [];
+                foreach ($reservation_data as $k =>$val) {
+                    $tmp = [];
+                    $tmp['id'] = $val->id;
+                    $tmp['place'] = $val->place;
+                    $tmp['start_date'] = $val->start_date;
+                    $tmp['progress'] = $val->progress;
+                    $tmp['count'] = $val->count;
+                    $tmp['created_at'] = $val->created_at;
+                    $tmp['updated_at'] = $val->updated_at;
+        
+                    $entry = new Entry();
+                    $entry_data = $entry->getEntry($val->id);
+                    $count = 0;
+        
+                    foreach ($entry_data as $item) {
+                        $count = $count + $item->count;
+                    }
+                    $tmp['left_seat'] = $val->count - $count;
+        
+                    $data[$k] = $tmp;
+                }
+
+
                 return view('/management/reservation/index', compact('data', 'search'));
             }
 
             if (!empty($request->place)) {
                 $search['place'] = $request->input('place');
-                $data = $reservation->serachReservation($search);
+                $reservation_data = $reservation->serachReservation($search);
+
+                $data = [];
+                foreach ($reservation_data as $k =>$val) {
+                    $tmp = [];
+                    $tmp['id'] = $val->id;
+                    $tmp['place'] = $val->place;
+                    $tmp['start_date'] = $val->start_date;
+                    $tmp['progress'] = $val->progress;
+                    $tmp['count'] = $val->count;
+                    $tmp['created_at'] = $val->created_at;
+                    $tmp['updated_at'] = $val->updated_at;
+        
+                    $entry = new Entry();
+                    $entry_data = $entry->getEntry($val->id);
+                    $count = 0;
+        
+                    foreach ($entry_data as $item) {
+                        $count = $count + $item->count;
+                    }
+                    $tmp['left_seat'] = $val->count - $count;
+        
+                    $data[$k] = $tmp;
+                }
+
+
+
                 return view('/management/reservation/index', compact('data', 'search'));
             }
 
-
-
             if (!empty($request->start_date)) {
                 $search['start_date'] = $request->input('start_date');
-                $data = $reservation->serachReservation($search);
+                $reservation_data = $reservation->serachReservation($search);
+
+                $data = [];
+                foreach ($reservation_data as $k =>$val) {
+                    $tmp = [];
+                    $tmp['id'] = $val->id;
+                    $tmp['place'] = $val->place;
+                    $tmp['start_date'] = $val->start_date;
+                    $tmp['progress'] = $val->progress;
+                    $tmp['count'] = $val->count;
+                    $tmp['created_at'] = $val->created_at;
+                    $tmp['updated_at'] = $val->updated_at;
+        
+                    $entry = new Entry();
+                    $entry_data = $entry->getEntry($val->id);
+                    $count = 0;
+        
+                    foreach ($entry_data as $item) {
+                        $count = $count + $item->count;
+                    }
+                    $tmp['left_seat'] = $val->count - $count;
+        
+                    $data[$k] = $tmp;
+                }
+
                 return view('/management/reservation/index', compact('data', 'search'));
             }
         }
 
-        $data = $reservation->getAllData();
+        $reservation_data = $reservation->getAllData();
+
+        $data = [];
+        foreach ($reservation_data as $k =>$val) {
+            $tmp = [];
+            $tmp['id'] = $val->id;
+            $tmp['place'] = $val->place;
+            $tmp['start_date'] = $val->start_date;
+            $tmp['progress'] = $val->progress;
+            $tmp['count'] = $val->count;
+            $tmp['created_at'] = $val->created_at;
+            $tmp['updated_at'] = $val->updated_at;
+
+            $entry = new Entry();
+            $entry_data = $entry->getEntry($val->id);
+            $count = 0;
+
+            foreach ($entry_data as $item) {
+                $count = $count + $item->count;
+            }
+            $tmp['left_seat'] = $val->count - $count;
+
+            $data[$k] = $tmp;
+        }
+    
         return view('/management/reservation/index', compact('data'));
     }
 
@@ -139,6 +234,7 @@ class ManagementController extends Controller
             if ($val->user_flg == 1) {
                 $user = new User();
                 $user_data = $user->selectUser($val->user_id);
+                $tmp['user_id'] = $user_data->id;
                 $tmp['family_name'] = $user_data->family_name;
                 $tmp['first_name'] = $user_data->first_name;
                 $tmp['email'] = $user_data->email;
@@ -150,9 +246,8 @@ class ManagementController extends Controller
                 }
             } else {
                 $account = new Account();
-                $account = new Account();
                 $account_data = $account->getAccount($val->account_id);
-
+                $tmp['user_id'] = $account_data->id;
                 $tmp['family_name'] = $account_data->family_name;
                 $tmp['first_name'] = $account_data->first_name;
                 $tmp['email'] = $account_data->email;
@@ -163,10 +258,10 @@ class ManagementController extends Controller
                 }
             }
 
-            $reservation_data['used_seat'] = $reservation_data['count'] - $count;
-
             $data[$val->id] = $tmp;
         }
+
+        $reservation_data['used_seat'] = $reservation_data['count'] - $count;
 
 
         return view('/management/reservation/list', compact('data', 'reservation_data'));
@@ -233,7 +328,6 @@ class ManagementController extends Controller
 
     public function information_delete_index(Request $request, $id)
     {
-
         return redirect('/management/information/index');
     }
 

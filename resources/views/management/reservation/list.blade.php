@@ -60,11 +60,7 @@
                         <td>{{ $reservation_data['start_date'] }}</td>
                         <td>{{ $reservation_data['end_date'] }}</td>
                         <td>{{ $reservation_data['count'] }}</td>
-                        @if (!empty($reservation_data['used_seat']))
-                            <td>{{ $reservation_data['used_seat'] }}</td>
-                        @else
-                            <td>{{ $reservation_data['count'] }}</td>
-                        @endif
+                        <td>{{ $reservation_data['used_seat'] }}</td>
                         <td>{{ $reservation_data['created_at'] }}</td>
                         <td><a href="/management/reservation/detail/{{ $reservation_data['id'] }}">予約情報の変更</a></td>
                     </tr>
@@ -82,7 +78,8 @@
             <thead>
                 <tr class="success">
                     <td>予約人数</td>
-                    <td>ID</td>
+                    <td>エントリーID</td>
+                    <td>ユーザーID</td>
                     <td>名字</td>
                     <td>名前</td>
                     <td>メールアドレス</td>
@@ -101,14 +98,17 @@
                     @foreach ($data as $val)
                         <?php
                         $color = 'table-warning';
-                        if ($val['user_flg'] == 0) {
+                        if ($val['user_flg'] == 1) {
+                        }else {
                             $color = 'table-secondary';
                         }
+                        
                         ?>
                         <tr class=<?php echo $color; ?>>
                             <td>{{ $val['count'] }}人</td>
+                            <td>{{ $val['id'] }}</td>
                             <td>
-                                <a href="/management/user/detail/{{ $val['id'] }}/{{ $val['user_flg'] }}">{{ $val['id'] }}
+                                <a href="/management/user/detail/{{ $val['user_id'] }}/{{ $val['user_flg'] }}">{{ $val['user_id'] }}
                                 </a>
                             </td>
                             <td>{{ $val['family_name'] }}</td>

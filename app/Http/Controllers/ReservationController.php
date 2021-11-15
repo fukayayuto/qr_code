@@ -767,6 +767,8 @@ class ReservationController extends Controller
             return view('/reservation/nomember/account')->with('count', $count)->with('reservation_id', $reservation_id);
         }
 
+        $user_flg = null;
+
 
         //ログイン情報
         if (empty(Auth::user())) {
@@ -787,7 +789,7 @@ class ReservationController extends Controller
         //     $tmp[$k] = $val;
         // }
 
-        return view('/reservation/register/check', compact('user', 'data'))->with('count', $count);
+        return view('/reservation/register/check', compact('user', 'data'))->with('count', $count)->with('user_flg', $user_flg);
     }
 
     //予約確認画面表示
@@ -928,7 +930,6 @@ class ReservationController extends Controller
 
         //顧客内容をアカウントに登録
         if (!is_null($request->user_flg)) {
-
             $account = new Account();
 
             $account->family_name = $request->family_name;
@@ -1098,7 +1099,6 @@ class ReservationController extends Controller
     //アカウント登録後(非会員用)
     public function reservation_customer_nomember_account_create(Request $request)
     {
-
         $reservation_id = $request->reservation_id;
         $count = $request->count;
         $user_flg = 0;

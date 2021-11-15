@@ -107,6 +107,10 @@
             @endif
             <button class="submit">検索</button>
         </form>
+        <a href="/management/reservation/index">
+            <button>リセット</button>
+        </a>
+        
     </div>
 
     <br>
@@ -119,7 +123,8 @@
                     <td>予約会場</td>
                     <td>開始日</td>
                     <td>所用日数</td>
-                    <td>席数</td>
+                    <td>定員枠</td>
+                    <td>残り定員枠</td>
                     <td>作成日時</td>
                     <td>更新日時</td>
                     <td></td>
@@ -130,8 +135,8 @@
                 @if (!empty($data))
                     @foreach ($data as $item)
                         <tr>
-                            <td>{{ $item->id }}</td>
-                            @switch($item->place)
+                            <td>{{ $item['id'] }}</td>
+                            @switch($item['place'])
                                 @case(1)
                                     <td>会員</td>
                                 @break
@@ -147,14 +152,15 @@
                                 @default
 
                             @endswitch
-                            <td>{{ $item->start_date }}</td>
-                            <td>{{ $item->progress }}日</td>
-                            <td>{{ $item->count }}席</td>
-                            <td>{{ $item->created_at }}</td>
-                            <td>{{ $item->updated_at }}</td>
-                            <td><a href="/management/reservation/detail/{{ $item->id }}"><button>編集</button></a>
+                            <td>{{ $item['start_date'] }}</td>
+                            <td>{{ $item['progress'] }}日</td>
+                            <td>{{ $item['count'] }}席</td>
+                            <td>{{ $item['left_seat'] }}席</td>
+                            <td>{{ $item['created_at'] }}</td>
+                            <td>{{ $item['updated_at'] }}</td>
+                            <td><a href="/management/reservation/detail/{{ $item['id'] }}"><button>編集</button></a>
                             </td>
-                            <td><a href="/management/reservation/list/{{ $item->id }}"><button>エントリー表示</button></a>
+                            <td><a href="/management/reservation/list/{{ $item['id'] }}"><button>エントリー表示</button></a>
                             </td>
                         </tr>
                     @endforeach

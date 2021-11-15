@@ -10,6 +10,7 @@ use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\ManagementController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Ajax;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailTest;
@@ -261,7 +262,7 @@ Route::get('/management/reservation/detail/edit', [ManagementController::class, 
 Route::get('/management/reservation/delete/{id}', [ManagementController::class, 'reservation_delete']);
 
 
-//マネージメント画面(予約情報の削除後)
+//マネージメント画面(予約情報のエントリー表示)
 Route::get('/management/reservation/list/{id}', [ManagementController::class, 'reservation_entry_list']);
 
 
@@ -300,3 +301,23 @@ Route::get('/management/user/index', [ManagementController::class, 'user_index']
 Route::get('/management/user/detail/{id}/{user_flg}', [ManagementController::class, 'user_detail']);
 
 //****************************************************************************************************************************************************
+
+
+// ログイン
+Route::get('/admin_login', function () {
+    return view('login');
+});
+Route::POST('/admin_login', 'AdminController@login');
+Route::get('/admin_logout', 'LoginController@logout')->middleware('login');
+
+// ログイン
+Route::get('/managemant/login', function () {
+    return view('/management/login');
+});
+Route::POST('/admin_login', [AdminController::class, 'login']);
+Route::get('/admin_logout', [AdminController::class, 'logout'])->middleware('login');
+
+
+Route::get('/test', function () {
+    return view('user_check');
+});
