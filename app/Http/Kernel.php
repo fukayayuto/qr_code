@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
             \Laravel\Jetstream\Http\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
+            \App\Http\Middleware\RegenerateToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 

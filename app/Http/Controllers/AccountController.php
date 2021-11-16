@@ -4,50 +4,85 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Account;
+use Illuminate\Mail\Mailable;
+use App\Mail\MailTest;
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SampleNotification;
+use App\Mail\MailCostomer;
+use App\Mail\MailManagement;
+use Illuminate\Support\Facades\Cache;
 
 class AccountController extends Controller
 {
     public function index()
     {
-        return view('form');
+        return view('/qrcode/index');
     }
 
-    public function post(Request $request)
+    public function check_list_index()
     {
-        $account = new Account();
+        return view('/qrcode/check_list');
+    }
 
-
-        $account->family_name = $request->family_name;
-        $account->first_name = $request->first_name;
-        $account->email = $request->email;
-        $account->company_name = $request->company_name;
-        $account->sales_office = $request->sales_office;
-        $account->phone = $request->phone;
-    
-        $account->save();
-
-        return view('form');
+    public function check_list(Request $request)
+    {
+        $data = [];
+        $data['name'] = $request->name;
+        $data['email'] = $request->email;
+        $data['company_name'] = $request->company_name;
+        $data['select'] = $request->select;
+        return view('/qrcode/check_list', compact('data'));
     }
 
 
-    public function user_check(Request $request)
+    public function store(Request $request)
     {
 
-        //会員状態の確認
-        if (!empty(Auth::user())) {
-            $user = Auth::user();
-
-            return view('count_form')->with('user', $user);
+        // 多重サブミットチェック
+        if (!multiSubmitCheck($request)) {
+            abort(409);
         }
-        
-        return view('');
+
+        $data = [];
+        $name = $request->name;
+        $email = $request->email;
+        $company_name = $request->company_name;
+        $select = $request->select;
+        $to = $email;
+        $text = 'これからもよろしくお願いいたします。';
+    
+            
+    
+        $text = 'ユーザーが送信しました';
+    
+        Mail::to($to)->send(new MailCostomer($text, $name, $email, $company_name, $select));
+          
+
+        // 二重送信対策
+        $request->session()->regenerateToken();
+
+        // Mail::to($to)->send(new MailManagement($text, $name, $email, $company_name, $select));
+    
+        return redirect('/sent');
     }
 
-    public function load()
+    private function multiSubmitCheck(Request $request)
     {
-        $account = new Account();
-        $data = $account->getData();
+        // Sessionオブジェクト(Store.php)
+        $session = $request->session();
+        // Sessionオブジェクトを最新化
+        $session->start();
+        // csrfトークンと画面パラメータのcsrfトークンの値が異なる場合エラー
+        if ($session->token() != $request->input('_token')) {
+            return false;
+        }
+        // csrfトークンの再生成
+        // Store #regenerate によるセッションID再生成でもトークンの再生成が行われる
+        $session->regenerateToken();
+        // Sessionを保存
+        $session->save();
 
-        return response()->json($data);
+        return true;
     }
 }
