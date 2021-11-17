@@ -7,5 +7,3 @@
 </div>
 
 <br>
-
-{!! QrCode::generate('https://coubic.com/good-learning/') !!}

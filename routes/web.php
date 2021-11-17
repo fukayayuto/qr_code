@@ -24,8 +24,8 @@ use Illuminate\Support\Facades\Mail;
 Route::get('/', [AccountController::class, 'index'])->name('qr_form');
 
 //確認画面表示
-Route::get('/check/list', [AccountController::class, 'check_list_index']);
-Route::post('/', [AccountController::class, 'check_list'])->name('check_list');
+Route::get('/check', [AccountController::class, 'check_list_index']);
+Route::post('/check', [AccountController::class, 'check_list'])->name('check_list');
 
 //登録、メール自動送信
 Route::post('/store', [AccountController::class, 'store'])->name('store');
@@ -37,7 +37,7 @@ Route::get('/qrcode', function () {
     return view('/qrcode/qrcode');
 });
 
-//QRコード
+//メール送信後
 Route::get('/sent', function () {
     return view('/qrcode/sent');
 });

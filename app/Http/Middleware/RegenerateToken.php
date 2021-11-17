@@ -16,10 +16,10 @@ class RegenerateToken
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->method() === 'POST') {
-            // POSTのときだけトークンリフレッシュをしformの多重送信を防ぐ
-            $request->session()->regenerateToken();
-        }
+        // if ($request->method() === 'POST') {
+        //     // POSTのときだけトークンリフレッシュをしformの多重送信を防ぐ
+        //     $request->session()->regenerateToken();
+        // }
           
         return $next($request);
     }

@@ -12,6 +12,7 @@ use App\Mail\SampleNotification;
 use App\Mail\MailCostomer;
 use App\Mail\MailManagement;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
 {
@@ -22,67 +23,72 @@ class AccountController extends Controller
 
     public function check_list_index()
     {
-        return view('/qrcode/check_list');
+        return view('/qrcode/index');
     }
 
     public function check_list(Request $request)
     {
+        $rulus = [
+            'email' => 'email',
+            'name_kana' => 'regex:/\A[ァ-ヴー]+\z/u'
+          ];
+        
+        $message = [
+            'email.email' => 'メールアドレスは正しい形式で入力してください',
+            'name_kana.regex' => '氏名(カナ)は全角カナで入力してください'
+          ];
+
+        $validate = Validator::make($request->all(), $rulus, $message);
+
+    
+        if ($validate->fails()) {
+            return redirect()->route("qr_form")->withErrors($validate->messages());
+        }
+        
         $data = [];
         $data['name'] = $request->name;
+        $data['name_kana'] = $request->name_kana;
         $data['email'] = $request->email;
         $data['company_name'] = $request->company_name;
-        $data['select'] = $request->select;
+        if ($request->select_date == 1) {
+            $data['select_date'] = '１１月３０日（火）１３：００～１４：３０';
+            $data['select'] = 1;
+        } else {
+            $data['select_date'] = '１２月１日（水）１５：３０～１７：００';
+            $data['select'] = 1;
+        }
+
+        // 二重送信対策
+        $request->session()->regenerateToken();
+        
         return view('/qrcode/check_list', compact('data'));
     }
 
 
     public function store(Request $request)
     {
-
-        // 多重サブミットチェック
-        if (!multiSubmitCheck($request)) {
-            abort(409);
-        }
-
         $data = [];
         $name = $request->name;
+        $name_kana = $request->name_kana;
         $email = $request->email;
         $company_name = $request->company_name;
         $select = $request->select;
+        if ($select == 1) {
+            $date = '１１月３０日（火）１３：００～１４：３０';
+        } else {
+            $date = '１２月１日（水）１５：３０～１７：００';
+        }
         $to = $email;
-        $text = 'これからもよろしくお願いいたします。';
-    
             
     
-        $text = 'ユーザーが送信しました';
-    
-        Mail::to($to)->send(new MailCostomer($text, $name, $email, $company_name, $select));
-          
-
         // 二重送信対策
         $request->session()->regenerateToken();
 
-        // Mail::to($to)->send(new MailManagement($text, $name, $email, $company_name, $select));
+        Mail::to($to)->send(new MailCostomer($name, $name_kana, $email, $company_name, $date));
+          
+        $to = 'takemori@example.co.jp';
+        Mail::to($to)->send(new MailManagement($name, $name_kana, $email, $company_name, $date));
     
-        return redirect('/sent');
-    }
-
-    private function multiSubmitCheck(Request $request)
-    {
-        // Sessionオブジェクト(Store.php)
-        $session = $request->session();
-        // Sessionオブジェクトを最新化
-        $session->start();
-        // csrfトークンと画面パラメータのcsrfトークンの値が異なる場合エラー
-        if ($session->token() != $request->input('_token')) {
-            return false;
-        }
-        // csrfトークンの再生成
-        // Store #regenerate によるセッションID再生成でもトークンの再生成が行われる
-        $session->regenerateToken();
-        // Sessionを保存
-        $session->save();
-
-        return true;
+        return view('/qrcode/sent')->with('email', $email);
     }
 }

@@ -37,13 +37,4 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
         });
     }
-
-    public function render($request, Throwable $exception)
-    {
-        // 飛んできた例外がTokenMismatchExceptionのインスタンスなら(csrf起因の例外なら)
-        if ($exception instanceof \Illuminate\Session\TokenMismatchException) {
-            return redirect()->route('err');
-        }
-        return parent::render($request, $exception);
-    }
 }

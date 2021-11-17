@@ -14,23 +14,24 @@ class MailCostomer extends Mailable
     protected $title;
     protected $text;
     protected $name;
+    protected $name_kana;
     protected $email;
     protected $company_name;
-    protected $select;
+    protected $date;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($text, $name, $email, $company_name, $select)
+    public function __construct($name, $name_kana, $email, $company_name, $date)
     {
-        $this->title = sprintf('%sさん、ありがとうございます。', $name);
-        $this->text = $text;
+        // $this->title = sprintf('%sさん、ありがとうございます。', $name);
         $this->name = $name;
+        $this->name_kana = $name_kana;
         $this->email = $email;
         $this->company_name = $company_name;
-        $this->select = $select;
+        $this->date = $date;
     }
 
     /**
@@ -41,12 +42,13 @@ class MailCostomer extends Mailable
     public function build()
     {
         return $this->view('emails.costomer')
-                    ->subject('顧客用確認メールです')
+                    ->subject('確認メールです(顧客用)')
                     ->with([
                         'name' => $this->name,
+                        'name_kana' => $this->name_kana,
                         'email' => $this->email,
                         'company_name' => $this->company_name,
-                        'select' => $this->select,
+                        'date' => $this->date,
                       ]);
     }
 }
